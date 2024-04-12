@@ -25,6 +25,8 @@ import numpy as np
 # A- = 4
 # A  = 5
 # A+ = 6
+
+
 def letter_grade(grade):
     grade = float(grade)
     if grade < 80:
@@ -41,6 +43,25 @@ def letter_grade(grade):
         return 5
     else:
         return 6
+
+# chunk to return the students with dashes in gradebook
+grade_df = pd.read_csv("grades.csv",skiprows=[1,2],skipfooter=1)
+grade_df['Section'] = grade_df['Section'].str[-3:]
+grade_df.sort_values("Section",inplace=True)
+column_array = []
+print("Students with dashes in gradebook")
+for column in grade_df.columns.values:
+    if column.__contains__("Lab") and (not column.__contains__("Score") and (not grade_df[column].isnull().values.all())):
+        print(column)
+        print(10*"---")
+        for student in range(len(grade_df["Student"])):
+            if str(grade_df[column][student])=='nan':
+                print(grade_df["Section"].iloc[student],grade_df["Student"].iloc[student])
+        column_array.append(column)
+        print()
+del grade_df,column_array
+print()
+
 
 course_num = sys.argv[1]
 
@@ -110,12 +131,14 @@ fig.set_figheight(30)
 fig.set_figwidth(10)
 plt.subplots_adjust(left=0.1, right=0.9, top=0.95, bottom=0.05)
 fig.suptitle(course_num+' Grading Distributions - '+str(date.today()))
+all_grades = np.array([],dtype=float)
 
 for i in range(len(sections)):
     section_dist = [0]*7
     for j in section_student_ind[i]:
         section_dist[letter_grade(grades[j][current_score_ind])] += 1/len(section_student_ind[i])
     sec_grades = np.array([grades[x] for x in section_student_ind[i]])[:,current_score_ind].astype(float)
+    all_grades = np.append(sec_grades,all_grades)
     mean_grades,median_grades = np.mean(sec_grades),np.median(sec_grades)
     row = i % ((len(sections)+1)//2)
     col = i // ((len(sections)+1)//2)
@@ -128,4 +151,19 @@ for i in range(len(sections)):
     axs[row][col].set_yticks([])
     axs[row][col].set_title("Mean: {}, Median: {}".format(np.round(mean_grades,2),np.round(median_grades,2)))
 fig.savefig(os.getcwd()+"/"+course_num+"/completion_"+str(date.today())+".jpg")
+plt.show()
+
+
+fig, ax = plt.subplots()
+
+ax.hist(all_grades,np.arange(80,100),alpha=0.5, histtype='bar', ec='black',density=True,stacked=True,align='right')
+
+ax.set_xticks(np.arange(80,100))
+ax.set_xlim(80,100)
+ax.set_title('Grades in {}'.format(course_num)) 
+ax.set_xlabel('Grades') 
+ax.set_ylabel('Normalized count [%]')
+
+fig.savefig(os.getcwd()+"/"+course_num+"/allClass_"+str(date.today())+".jpg")
+
 plt.show()

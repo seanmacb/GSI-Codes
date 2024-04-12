@@ -2,6 +2,7 @@ import re
 import matplotlib.pyplot as plt
 import sys
 from datetime import date
+import pandas as pd
 import os
 import numpy as np
 
@@ -25,6 +26,8 @@ import numpy as np
 # A- = 4
 # A  = 5
 # A+ = 6
+
+
 def letter_grade(grade):
     grade = float(grade)
     if grade < 80:
@@ -41,6 +44,25 @@ def letter_grade(grade):
         return 5
     else:
         return 6
+
+# chunk to return the students with dashes in gradebook
+grade_df = pd.read_csv("grades.csv",skiprows=[1,2],skipfooter=1)
+grade_df['Section'] = grade_df['Section'].str[-3:]
+grade_df.sort_values("Section",inplace=True)
+column_array = []
+print("Students with dashes in gradebook")
+for column in grade_df.columns.values:
+    if column.__contains__("Lab") and (not column.__contains__("Score") and (not grade_df[column].isnull().values.all())):
+        print(column)
+        print(10*"---")
+        for student in range(len(grade_df["Student"])):
+            if str(grade_df[column][student])=='nan':
+                print(grade_df["Section"].iloc[student],grade_df["Student"].iloc[student])
+        column_array.append(column)
+        print()
+del grade_df,column_array
+print()
+
 
 course_num = sys.argv[1]
 
