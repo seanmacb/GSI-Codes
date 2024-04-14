@@ -48,20 +48,45 @@ def letter_grade(grade):
 # chunk to return the students with dashes in gradebook
 grade_df = pd.read_csv("grades.csv",skiprows=[1,2],skipfooter=1)
 grade_df['Section'] = grade_df['Section'].str[-3:]
-grade_df.sort_values("Section",inplace=True)
 column_array = []
-print("Students with dashes in gradebook")
+print("Students with dashes in gradebook\n")
+grade_arr = np.array([])
 for column in grade_df.columns.values:
     if column.__contains__("Lab") and (not column.__contains__("Score") and (not grade_df[column].isnull().values.all())):
-        print(column)
-        print(10*"---")
         for student in range(len(grade_df["Student"])):
             if str(grade_df[column][student])=='nan':
-                print(grade_df["Section"].iloc[student],grade_df["Student"].iloc[student])
-        column_array.append(column)
-        print()
+                grade_arr = np.append(grade_arr,[column,grade_df["Section"].iloc[student],grade_df["Student"].iloc[student]])
 del grade_df,column_array
-print()
+
+grade_arr = np.reshape(grade_arr,(-1,3))
+
+exclusions = sys.argv[2]
+exclusions = exclusions.split(",")
+print(exclusions,type(exclusions))
+sections = np.unique(grade_arr[:,1])
+labs = np.unique(grade_arr[:,0])
+
+remove_list = []
+for lab in labs:
+    for exclusion in exclusions:
+        if lab.startswith("Lab "+exclusion):
+            remove_list.append(lab)
+            continue
+
+labs = [i for i in labs if i not in remove_list]
+
+for section in sections:
+    section_arr = grade_arr[grade_arr[:,1]==section]
+    print("Section",section)
+    print(10*'--')
+    for lab in labs:
+        if lab in section_arr[:,0]:
+            print(lab)
+            print(10*'--')
+            students = section_arr[section_arr[:,0]==lab][:,2]
+            for student in students:
+                print(student)
+            print()
 
 
 course_num = sys.argv[1]
