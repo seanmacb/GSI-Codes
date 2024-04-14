@@ -77,8 +77,9 @@ labs = [i for i in labs if i not in remove_list]
 
 for section in sections:
     section_arr = grade_arr[grade_arr[:,1]==section]
-    print("Section",section)
-    print(10*'--')
+    if len(section_arr)!=0:
+        print("Section",section)
+        print(10*'--')
     for lab in labs:
         if lab in section_arr[:,0]:
             print(lab)
