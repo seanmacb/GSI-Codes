@@ -77,7 +77,7 @@ labs = [i for i in labs if i not in remove_list]
 
 for section in sections:
     section_arr = grade_arr[grade_arr[:,1]==section]
-    if len(section_arr)!=0:
+    if len(section_arr[:,0])!=0:
         print("Section",section)
         print(10*'--')
     for lab in labs:
@@ -88,6 +88,7 @@ for section in sections:
             for student in students:
                 print(student)
             print()
+    print()
 
 
 course_num = sys.argv[1]
@@ -149,7 +150,7 @@ for i in range(len(sections)):
     axs[row][col].set_ylim([0,100])
     axs[row][col].bar([ str(i+1) for i in range(len(lab_grade_inds)) ], grading_prog)
     axs[row][col].set_yticks([])
-fig.savefig(os.getcwd()+"/"+course_num+"/distribution_"+str(date.today())+".jpg")
+fig.savefig(os.getcwd()+"/"+course_num+"/completion_"+str(date.today())+".jpg")
 plt.show()
 
 current_score_ind = grades[0].index("Current Score") + 1
@@ -177,7 +178,7 @@ for i in range(len(sections)):
     axs[row][col].bar(['<B', 'B-', 'B', 'B+', 'A-', 'A', 'A+'], section_dist)
     axs[row][col].set_yticks([])
     axs[row][col].set_title("Mean: {}, Median: {}".format(np.round(mean_grades,2),np.round(median_grades,2)))
-fig.savefig(os.getcwd()+"/"+course_num+"/completion_"+str(date.today())+".jpg")
+fig.savefig(os.getcwd()+"/"+course_num+"/distribution_"+str(date.today())+".jpg")
 plt.show()
 
 
