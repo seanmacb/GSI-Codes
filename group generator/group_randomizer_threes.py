@@ -8,7 +8,7 @@ import sys
 # groups, outputting a csv file that can be directly uploaded to Canvas.
 
 ############################# Instructions ###############################
-# run: python group_randomizer {course num}
+# run: python group_randomizer {lab num}
 # input: downloaded roster from Canvas groups renamed to 'roster.csv' 
 ######## placed in the same directory
 # output: groups.csv in the same directory, can be uploaded directly to 
